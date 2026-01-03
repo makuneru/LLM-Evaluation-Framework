@@ -1,6 +1,6 @@
 # LLM Evaluation Framework
 
-A simple framework for evaluating Large Language Model (LLM) responses using DeepEval.
+A simple framework for evaluating Large Language Model (LLM) responses using [DeepEval](https://deepeval.com/docs/getting-started).
 
 ## 🚀 Quick Start (3 Steps)
 
