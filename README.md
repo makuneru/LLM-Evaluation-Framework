@@ -24,9 +24,10 @@ python3 -m pytest -v
 
 # Or run individual examples
 python3 metric_geval_example.py
-python3 metric_conversational_geval_example.py
 python3 metric_answer_relevancy_example.py
+python3 metric_conversational_geval_example.py
 python3 metric_faithfulness_example.py
+python3 metric_golden_dataset_geval_example.py
 ```
 
 ---
@@ -110,6 +111,21 @@ Your LLM → Generates response → DeepEval (GPT-4) → Evaluates quality → P
 
 ---
 
+### 5. **Golden Datasets** 🌟
+**What it does:** Batch evaluation using predefined correct input-output pairs
+
+**Use when:**
+- ✅ Regression testing (did new model version break anything?)
+- ✅ Comparing multiple models on the same test set
+- ✅ Tracking performance over time
+- ✅ Automated CI/CD testing
+
+**Example:** Test 100 known HR policy questions with expected answers to see how well your LLM performs
+
+**File:** `metric_golden_dataset_geval_example.py` (14 HR leave policy scenarios)
+
+---
+
 ## 📊 Comparison Table
 
 | Metric | Single Response | Multi-Turn | Requires Context | Use Case |
@@ -118,6 +134,7 @@ Your LLM → Generates response → DeepEval (GPT-4) → Evaluates quality → P
 | **Answer Relevancy** | ✅ | ❌ | ❌ | Q&A relevance, chatbot responses |
 | **Conversational GEval** | ❌ | ✅ | ❌ | Multi-turn dialogues, conversations |
 | **Faithfulness** | ✅ | ❌ | ✅ | RAG systems, policy compliance |
+| **Golden Dataset** | ✅ | ✅ | ✅/❌ | Batch testing, regression, comparison |
 
 ---
 
@@ -134,6 +151,7 @@ LLM-Evaluation-Framework/
 ├── metric_answer_relevancy_example.py     # Answer Relevancy: Hardcoded responses (6 scenarios)
 ├── metric_conversational_geval_example.py # Conversational: Multi-turn dialogues (15 scenarios)
 ├── metric_faithfulness_example.py         # Faithfulness: RAG/policy testing (8 scenarios)
+├── metric_golden_dataset_geval_example.py # Golden Dataset: HR leave policies (14 scenarios)
 │
 └── README.md                              # This file
 ```
@@ -206,6 +224,27 @@ test_case = LLMTestCase(
 
 ---
 
+### Model Comparison / Regression Testing (HR Policies)
+```python
+# Test 14 HR leave policy questions across GPT-4, GPT-3.5, Claude
+goldens = [
+    Golden(
+        input="How many annual leave days do full-time employees get?",
+        expected_output="15 days of paid annual leave per year, accruing at 1.25 days/month."
+    ),
+    Golden(
+        input="When do I need a medical certificate for sick leave?",
+        expected_output="Medical certificate required for 3+ consecutive days."
+    ),
+    # ... 12 more HR policy questions
+]
+dataset = EvaluationDataset(goldens=goldens)
+# Run same tests on multiple models to compare accuracy
+```
+**Use:** Golden Dataset
+
+---
+
 ## 🔧 Troubleshooting
 
 ### `openai.RateLimitError: Error code: 429`
@@ -243,6 +282,10 @@ Do you have source documents/context the LLM should follow?
 
 Are you testing if the answer addresses the question?
 ├─ YES → Use Answer Relevancy
+└─ NO ↓
+
+Do you have 50+ test cases to run repeatedly?
+├─ YES → Use Golden Dataset
 └─ NO → Use GEval with custom criteria
 ```
 
@@ -253,7 +296,7 @@ Are you testing if the answer addresses the question?
 1. **Run the examples** - See how each metric works
 2. **Modify test cases** - Change inputs/outputs to match your domain
 3. **Add real LLM calls** - Replace simulated responses with actual API calls
-4. **Build test suite** - Collect 20-50 real test cases from your product
+4. **Build golden dataset** - Collect 20-50 real test cases from your product
 5. **Automate** - Add to CI/CD pipeline for regression testing
 
 ---
@@ -264,6 +307,7 @@ Are you testing if the answer addresses the question?
 2. **Adjust thresholds** - `0.5-0.7` is a good starting point, tune based on results
 3. **Combine metrics** - Use Answer Relevancy + Faithfulness together for RAG systems
 4. **Track over time** - Save results to see if model quality improves/degrades
+5. **Use Golden Datasets** - Best for regression testing and model comparison
 
 ---
 
