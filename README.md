@@ -25,6 +25,8 @@ python3 -m pytest -v
 # Or run individual examples
 python3 metric_geval_example.py
 python3 metric_conversational_geval_example.py
+python3 metric_answer_relevancy_example.py
+python3 metric_faithfulness_example.py
 ```
 
 ---
@@ -63,7 +65,22 @@ Your LLM → Generates response → DeepEval (GPT-4) → Evaluates quality → P
 
 ---
 
-### 2. **Conversational GEval** 💬
+### 2. **Answer Relevancy** 🎯
+**What it does:** Measures if the response actually answers the question
+
+**Use when:**
+- ✅ Testing chatbots and Q&A systems
+- ✅ Checking if responses stay on-topic
+- ✅ Evaluating customer support interactions
+- ✅ Detecting rambling or off-topic responses
+
+**Example:** User asks "Do you have this in stock?" - Does the answer address availability or just talk about the product?
+
+**File:** `metric_answer_relevancy_example.py` (6 scenarios with hardcoded responses)
+
+---
+
+### 3. **Conversational GEval** 💬
 **What it does:** Evaluates multi-turn conversations (back-and-forth dialogue)
 
 **Use when:**
@@ -78,12 +95,29 @@ Your LLM → Generates response → DeepEval (GPT-4) → Evaluates quality → P
 
 ---
 
+### 4. **Faithfulness** 📄
+**What it does:** Checks if the response is grounded in provided source documents (no hallucinations)
+
+**Use when:**
+- ✅ Building RAG (Retrieval-Augmented Generation) systems
+- ✅ Testing knowledge base Q&A
+- ✅ Ensuring responses match company policies/documents
+- ✅ Preventing LLM from making up information
+
+**Example:** User asks about parental leave policy - Does the answer match the actual HR policy document?
+
+**File:** `metric_faithfulness_example.py` (8 HR policy scenarios)
+
+---
+
 ## 📊 Comparison Table
 
 | Metric | Single Response | Multi-Turn | Requires Context | Use Case |
 |--------|----------------|------------|------------------|----------|
 | **GEval** | ✅ | ❌ | ❌ | Custom criteria, correctness testing |
+| **Answer Relevancy** | ✅ | ❌ | ❌ | Q&A relevance, chatbot responses |
 | **Conversational GEval** | ❌ | ✅ | ❌ | Multi-turn dialogues, conversations |
+| **Faithfulness** | ✅ | ❌ | ✅ | RAG systems, policy compliance |
 
 ---
 
@@ -97,7 +131,9 @@ LLM-Evaluation-Framework/
 ├── requirements.txt                       # Python dependencies
 │
 ├── metric_geval_example.py                # GEval: Correctness testing (5 scenarios)
+├── metric_answer_relevancy_example.py     # Answer Relevancy: Hardcoded responses (6 scenarios)
 ├── metric_conversational_geval_example.py # Conversational: Multi-turn dialogues (15 scenarios)
+├── metric_faithfulness_example.py         # Faithfulness: RAG/policy testing (8 scenarios)
 │
 └── README.md                              # This file
 ```
@@ -106,20 +142,30 @@ LLM-Evaluation-Framework/
 
 ## 🧪 Example Use Cases
 
-### Math Calculator App
+### E-Commerce Chatbot
 ```python
-# Verify calculation accuracy
-metric = GEval(
-    name="Correctness",
-    criteria="Check if the numerical answer is correct"
-)
+# Test if chatbot gives relevant product information
+metric = AnswerRelevancyMetric(threshold=0.7)
 test_case = LLMTestCase(
-    input="What is 5 divided by 2?",
-    expected_output="2.5",
-    actual_output="2.5"
+    input="Do you have this in stock?",
+    actual_output="Yes! In stock. Black and White. $199."
 )
 ```
-**Use:** GEval
+**Use:** Answer Relevancy
+
+---
+
+### HR Policy Bot
+```python
+# Ensure responses match official HR policy
+metric = FaithfulnessMetric(threshold=0.7)
+test_case = LLMTestCase(
+    input="How many vacation days do I get?",
+    actual_output="You receive 15 vacation days per year.",
+    retrieval_context=["Company Policy: Employees receive 15 vacation days annually."]
+)
+```
+**Use:** Faithfulness
 
 ---
 
@@ -140,6 +186,23 @@ metric = GEval(
 )
 ```
 **Use:** Conversational GEval
+
+---
+
+### Math Calculator App
+```python
+# Verify calculation accuracy
+metric = GEval(
+    name="Correctness",
+    criteria="Check if the numerical answer is correct"
+)
+test_case = LLMTestCase(
+    input="What is 5 divided by 2?",
+    expected_output="2.5",
+    actual_output="2.5"
+)
+```
+**Use:** GEval
 
 ---
 
@@ -172,6 +235,14 @@ pip3 install -r requirements.txt
 ```
 Are you testing multi-turn conversations?
 ├─ YES → Use Conversational GEval
+└─ NO ↓
+
+Do you have source documents/context the LLM should follow?
+├─ YES → Use Faithfulness
+└─ NO ↓
+
+Are you testing if the answer addresses the question?
+├─ YES → Use Answer Relevancy
 └─ NO → Use GEval with custom criteria
 ```
 
@@ -191,7 +262,7 @@ Are you testing multi-turn conversations?
 
 1. **Start small** - Test with 5-10 cases before scaling to 100+
 2. **Adjust thresholds** - `0.5-0.7` is a good starting point, tune based on results
-3. **Combine metrics** - Test both single responses and full conversations
+3. **Combine metrics** - Use Answer Relevancy + Faithfulness together for RAG systems
 4. **Track over time** - Save results to see if model quality improves/degrades
 
 ---
