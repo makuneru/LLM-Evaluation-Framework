@@ -201,123 +201,6 @@ LLM-Evaluation-Framework/
 
 ---
 
-## 🧪 Example Use Cases
-
-### E-Commerce Chatbot
-```python
-# Test if chatbot gives relevant product information
-metric = AnswerRelevancyMetric(threshold=0.7)
-test_case = LLMTestCase(
-    input="Do you have this in stock?",
-    actual_output="Yes! In stock. Black and White. $199."
-)
-```
-**Use:** Answer Relevancy
-
----
-
-### HR Policy Bot
-```python
-# Ensure responses match official HR policy
-metric = FaithfulnessMetric(threshold=0.7)
-test_case = LLMTestCase(
-    input="How many vacation days do I get?",
-    actual_output="You receive 15 vacation days per year.",
-    retrieval_context=["Company Policy: Employees receive 15 vacation days annually."]
-)
-```
-**Use:** Faithfulness
-
----
-
-### Customer Support Conversation
-```python
-# Evaluate multi-turn support interaction
-test_case = ConversationalTestCase(
-    turns=[
-        {"role": "user", "content": "I need help with my order"},
-        {"role": "assistant", "content": "I'd be happy to help! What's your order number?"},
-        {"role": "user", "content": "12345"},
-        {"role": "assistant", "content": "Found it! Your order ships tomorrow."}
-    ]
-)
-metric = GEval(
-    name="Helpfulness",
-    criteria="Rate how helpful and professional the support interaction was"
-)
-```
-**Use:** Conversational GEval
-
----
-
-### Math Calculator App
-```python
-# Verify calculation accuracy
-metric = GEval(
-    name="Correctness",
-    criteria="Check if the numerical answer is correct"
-)
-test_case = LLMTestCase(
-    input="What is 5 divided by 2?",
-    expected_output="2.5",
-    actual_output="2.5"
-)
-```
-**Use:** GEval
-
----
-
-### Database Query Validation
-```python
-# Ensure LLM only returns fields that exist
-metric = HallucinationMetric(threshold=0.7)
-test_case = LLMTestCase(
-    input="Show user profile with phone number",
-    actual_output="User: john@example.com, role: admin. Note: phone not in database.",
-    context=["Database has: email, role. Missing: phone, address"]
-)
-```
-**Use:** Hallucination
-
----
-
-### RAG System Evaluation (HR Chatbot)
-```python
-# Evaluate entire RAG pipeline: retrieval + generation
-metric = RagasMetric(threshold=0.5)
-test_case = LLMTestCase(
-    input="How many sick leave days do I get?",
-    actual_output="You receive 10 days of paid sick leave per year.",
-    expected_output="10 days of paid sick leave annually.",
-    retrieval_context=["Company Policy: 10 days sick leave per year..."]
-)
-# RAGAS tests: relevancy, faithfulness, precision, recall - all in one!
-```
-**Use:** RAGAS
-
----
-
-### Model Comparison / Regression Testing (HR Policies)
-```python
-# Test 14 HR leave policy questions across GPT-4, GPT-3.5, Claude
-goldens = [
-    Golden(
-        input="How many annual leave days do full-time employees get?",
-        expected_output="15 days of paid annual leave per year, accruing at 1.25 days/month."
-    ),
-    Golden(
-        input="When do I need a medical certificate for sick leave?",
-        expected_output="Medical certificate required for 3+ consecutive days."
-    ),
-    # ... 12 more HR policy questions
-]
-dataset = EvaluationDataset(goldens=goldens)
-# Run same tests on multiple models to compare accuracy
-```
-**Use:** Golden Dataset
-
----
-
 ## 🔧 Troubleshooting
 
 ### `openai.RateLimitError: Error code: 429`
@@ -395,14 +278,6 @@ Need custom evaluation criteria?
 
 ---
 
-## 📚 Learn More
-
-- [DeepEval Documentation](https://docs.deepeval.com/)
-- [DeepEval Metrics Guide](https://docs.deepeval.com/metrics)
-- [OpenAI API Documentation](https://platform.openai.com/docs)
-
----
-
 ## 💡 Pro Tips
 
 1. **Start small** - Test with 5-10 cases before scaling to 100+
@@ -416,6 +291,8 @@ Need custom evaluation criteria?
 
 ---
 
-## 📄 License
+## 📚 Learn More
 
-MIT
+- [DeepEval Documentation](https://docs.deepeval.com/)
+- [DeepEval Metrics Guide](https://docs.deepeval.com/metrics)
+- [OpenAI API Documentation](https://platform.openai.com/docs)
